@@ -530,6 +530,10 @@ func headerToBytes(buff *bytes.Buffer, header textproto.MIMEHeader) {
 			switch {
 			case field == "Content-Type" || field == "Content-Disposition":
 				buff.Write([]byte(subval))
+			case field == "From":
+				// some email clients (e.g. Zimbra) don't like the way mime.QEncoding
+				// encodes the From header (the thing is more than one of "=?utf-8?").
+				buff.Write([]byte(bencode(subval)))
 			default:
 				buff.Write([]byte(mime.QEncoding.Encode("UTF-8", subval)))
 			}
